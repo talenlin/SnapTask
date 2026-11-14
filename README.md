@@ -6,6 +6,14 @@ SnapTask 是一款面向 Windows 的本地优先任务工作台。用桌面浮�
 
 > SnapTask is a local-first Windows task workbench with a floating quick-capture window, visual progress tracking, and user-confirmed Feishu sync.
 
+[下载 Windows 安装版或免安装版](https://github.com/talenlin/SnapTask/releases/tag/v0.2.2-rc.1) · 当前为 0.2.2 预发布版
+
+## 界面预览
+
+![SnapTask 本地工作台演示界面：任务列表、进度和计划日历](assets/workbench-demo.png)
+
+*演示数据：A 项目、B 方案和 C 项目均为通用示例，不对应真实任务。*
+
 ## 功能
 
 - **快速记录**：在常驻浮窗中输入一句话和完成后进度，确认后新增任务或更新已有任务。
@@ -16,6 +24,17 @@ SnapTask 是一款面向 Windows 的本地优先任务工作台。用桌面浮�
 
 ## 使用方式
 
+```mermaid
+flowchart TD
+    A["启动 SnapTask"] --> B["展开浮窗"]
+    B --> C["一句话新增或更新任务"]
+    B --> D["打开本地任务工作台"]
+    D --> E["列表 · 状态看板 · 四象限 · 日历 · 统计"]
+    E --> F["按需导出本地备份"]
+    B -. "需要云端时" .-> G["连接飞书：创建空白空间或使用已有表格"]
+    G --> H["读取差异 · 预览 · 选择方向 · 确认同步"]
+```
+
 1. 启动 SnapTask，在浮窗中选择“打开本地任务工作台”。
 2. 在工作台新增任务，或在浮窗里输入工作描述和完成后总进度。
 3. 需要飞书同步时，在设置中先打开飞书确认登录身份，再生成并打开授权链接。授权完成后可一键创建空白个人任务空间，或连接已有多维表格；随后在同步面板读取、预览并确认记录。同步不会因打开窗口而自动上传任务。
@@ -23,9 +42,31 @@ SnapTask 是一款面向 Windows 的本地优先任务工作台。用桌面浮�
 
 飞书连接请使用飞书个人或企业身份，豆包账号不适用于当前创建流程。SnapTask 的用户授权请求用于复制任务模板以及访问多维表格；飞书自动创建的智能体应用可能另带消息、通讯录等预置权限。授权前请在飞书页面核对实际清单，并在开发者后台的“权限与范围”中检查应用已开通的权限。实际权限取决于飞书页面及账号配置。
 
+### 飞书连接顺序
+
+![飞书连接演示界面：先确认账号，再生成授权链接](assets/feishu-connection-demo.png)
+
+*未授权状态的界面示意，不含真实账号或授权码。* 先点“打开飞书并确认账号”，再勾选身份确认并生成授权链接；打开生成的页面完成授权后，才创建任务空间。连接成功不等于本地任务已上传。
+
 ## 技术与数据
 
 桌面端使用 Rust、Tauri 2 和系统 WebView2；任务保存在本机 SQLite 数据库中。云端连接属于可选功能。请勿将个人数据库、备份文件、应用密钥或访问令牌提交到公开仓库。
+
+### 实现路径
+
+```mermaid
+flowchart TD
+    UI["桌面浮窗与工作台<br/>HTML · CSS · JavaScript"] --> CORE["Tauri 命令与任务逻辑<br/>Rust"]
+    CORE --> LOCAL["本地任务<br/>SQLite"]
+    CORE --> BACKUP["备份与恢复<br/>JSON 文件"]
+    CORE --> CRED["授权凭据<br/>Windows 凭据库"]
+    CORE -. "用户开启后" .-> CLOUD["指定的飞书多维表格<br/>Feishu OpenAPI"]
+    CLOUD --> PREVIEW["读取结果与冲突预览"]
+    PREVIEW --> USER["用户选择方向并确认"]
+    USER --> CORE
+```
+
+本地记录无需登录即可使用。飞书同步先读取并展示差异；只有确认对应操作后才写入本地或云端，遇到冲突或写入结果无法核实时暂停。
 
 ## 开发构建
 
