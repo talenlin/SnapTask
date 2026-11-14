@@ -1,0 +1,33 @@
+:root { --guide-entry-bg:#e7f0fb; --guide-entry-hover:#d5e5f8; --guide-entry-ink:#214d78; --guide-entry-line:#6488ad; --guide-bg:#fff3d6; --guide-ink:#4f381e; --guide-muted:#725433; --guide-line:#a96d26; --guide-button:#845016; --guide-button-ink:#fff; --guide-hover:#f8e5bc; }
+#guide-open,.context-guide-link { background:var(--guide-entry-bg); color:var(--guide-entry-ink); border:1px solid var(--guide-entry-line); border-radius:8px; transition:transform 100ms ease-out; }
+#guide-open:hover:not(:disabled),.context-guide-link:hover:not(:disabled) { background:var(--guide-entry-hover); border-color:var(--guide-entry-ink); }
+#guide-open:focus-visible,.context-guide-link:focus-visible { outline:3px solid var(--guide-entry-ink); outline-offset:3px; }
+.coach-bubble[popover] { position:fixed; inset:auto; margin:0; width:300px; max-width:calc(100vw - 24px); max-height:calc(100vh - 24px); overflow:auto; padding:16px; border:1px solid var(--guide-line); border-radius:12px; background:var(--guide-bg); color:var(--guide-ink); box-shadow:0 6px 24px #583e2026; font:14px/1.65 system-ui,"Microsoft YaHei",sans-serif; z-index:2147483647; box-sizing:border-box; }
+.coach-bubble::backdrop,.coach-ring::backdrop { background:transparent; pointer-events:none; }
+.coach-bubble[hidden],.coach-ring[hidden] { display:none!important; }
+.coach-ring[popover] { position:fixed; inset:auto; margin:0; padding:0; border:2px solid var(--guide-line); outline:2px solid var(--guide-bg); border-radius:9px; background:transparent; box-shadow:0 0 0 3px #a96d2626; pointer-events:none; z-index:2147483646; box-sizing:border-box; }
+.coach-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.coach-counter { margin:0; color:var(--guide-muted); font-size:14px; }
+.coach-title { margin:8px 0!important; font-size:17px!important; line-height:1.5; letter-spacing:0; }
+.coach-text { margin:0; color:var(--guide-ink); overflow-wrap:anywhere; }
+.coach-bubble button { min-height:44px; padding:5px 10px; border:1px solid var(--guide-line); border-radius:7px; background:var(--guide-bg); color:var(--guide-ink); font:inherit; cursor:pointer; transition:transform 100ms ease-out; }
+.coach-bubble button:hover:not(:disabled) { background:var(--guide-hover); }
+.coach-bubble button:active:not(:disabled) { transform:scale(.98); }
+.coach-bubble button:disabled { opacity:.5; cursor:not-allowed; }
+.coach-bubble :focus-visible { outline:3px solid var(--guide-button); outline-offset:2px; }
+.coach-bubble .coach-close { border:0; text-decoration:underline; padding-right:0; white-space:nowrap; }
+.coach-footer { display:flex; justify-content:space-between; gap:12px; margin-top:14px; }
+.coach-footer[hidden] { display:none; }
+.coach-bubble .coach-next { background:var(--guide-button); color:var(--guide-button-ink); border-color:var(--guide-button); }
+.coach-bubble .coach-next:hover:not(:disabled) { background:var(--guide-ink); color:var(--guide-bg); }
+.coach-menu { display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+.coach-arrow { position:absolute; width:8px; height:8px; background:var(--guide-bg); border:1px solid var(--guide-line); transform:rotate(45deg); pointer-events:none; }
+.coach-bubble[data-side="right"] .coach-arrow { left:-5px; top:var(--coach-arrow-y); border-right:0; border-top:0; }
+.coach-bubble[data-side="left"] .coach-arrow { right:-5px; top:var(--coach-arrow-y); border-left:0; border-bottom:0; }
+.coach-bubble[data-side="bottom"] .coach-arrow { top:-5px; left:var(--coach-arrow-x); border-right:0; border-bottom:0; }
+.coach-bubble[data-side="top"] .coach-arrow { bottom:-5px; left:var(--coach-arrow-x); border-left:0; border-top:0; }
+.context-guide-link { min-height:44px; padding:4px 10px; text-decoration:underline; font:inherit; font-size:14px; cursor:pointer; }
+.coach-menu button { background:var(--guide-entry-bg); color:var(--guide-entry-ink); border-color:var(--guide-entry-line); }
+.coach-menu button:hover:not(:disabled) { background:var(--guide-entry-hover); }
+@media(prefers-color-scheme:dark) { :root { --guide-entry-bg:#203c59; --guide-entry-hover:#2b4c6e; --guide-entry-ink:#e0efff; --guide-entry-line:#79a3cd; --guide-bg:#352d22; --guide-ink:#f5ead6; --guide-muted:#d7c1a3; --guide-line:#bd955a; --guide-button:#f0c783; --guide-button-ink:#35220a; --guide-hover:#493a28; } }
+@media(prefers-reduced-motion:reduce) { .coach-bubble button { transition:none; transform:none!important; } }

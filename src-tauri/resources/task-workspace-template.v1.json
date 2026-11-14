@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "templateVersion": "2.0.0",
+  "displayName": "SnapTask 个人任务空间",
+  "provisioning": {
+    "feishuTemplateAppToken": "SFXybzuvmaJaxps1RNZcRipD6Ed"
+  },
+  "taskTable": {
+    "name": "任务清单",
+    "fields": [
+      {
+        "key": "title",
+        "name": "任务名称",
+        "aliases": [],
+        "type": "text",
+        "required": true,
+        "primary": true
+      },
+      {
+        "key": "quadrant",
+        "name": "任务类型",
+        "aliases": ["任务标签", "任务类别"],
+        "type": "singleSelect",
+        "required": true,
+        "options": ["重要且紧急", "重要不紧急", "紧急不重要", "不重要不紧急"]
+      },
+      {
+        "key": "status",
+        "name": "状态",
+        "aliases": [],
+        "type": "singleSelect",
+        "required": true,
+        "platformFieldTypes": {
+          "feishu": "formula",
+          "wps": "singleSelect"
+        },
+        "feishuFormula": "IF([进度]>=1,\"已完成\",IF([进度]<=0,\"未开始\",\"进行中\"))",
+        "options": ["未开始", "进行中", "已完成"]
+      },
+      {
+        "key": "progress",
+        "name": "进度",
+        "aliases": [],
+        "type": "number",
+        "platformFieldTypes": {
+          "feishu": "progress",
+          "wps": "number"
+        },
+        "displayFormat": "percentage",
+        "required": true,
+        "minimum": 0,
+        "maximum": 100,
+        "integer": true
+      },
+      {
+        "key": "detail",
+        "name": "任务详情",
+        "aliases": [],
+        "type": "multilineText",
+        "required": false
+      },
+      {
+        "key": "plannedDate",
+        "name": "计划完成日期",
+        "aliases": ["任务计划完成日期", "任务计划完成时间", "截止日期"],
+        "type": "date",
+        "required": false,
+        "initializationRequired": true,
+        "format": "yyyy-MM-dd"
+      },
+      {
+        "key": "today",
+        "name": "今日必完成",
+        "aliases": [],
+        "type": "checkbox",
+        "required": false,
+        "initializationRequired": true
+      },
+      {
+        "key": "startDate",
+        "name": "开始日期",
+        "aliases": ["任务开始日期"],
+        "type": "date",
+        "required": false,
+        "initializationRequired": true,
+        "format": "yyyy-MM-dd"
+      }
+    ]
+  },
+  "views": [
+    {
+      "name": "任务总览",
+      "type": "grid"
+    },
+    {
+      "name": "四象限看板",
+      "type": "kanban",
+      "groupBy": "quadrant"
+    },
+    {
+      "name": "今日必做看板",
+      "type": "kanban",
+      "groupBy": "today"
+    },
+    {
+      "name": "今日任务",
+      "type": "grid",
+      "filter": {
+        "field": "today",
+        "operator": "equals",
+        "value": true
+      }
+    }
+  ],
+  "dashboards": [
+    {
+      "name": "个人任务仪表盘",
+      "metrics": ["任务总数", "已完成任务", "重要且紧急任务", "任务状态分布", "任务类型分布"]
+    }
+  ],
+  "sampleRecords": []
+}
+

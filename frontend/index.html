@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
+  <title>个人任务进度</title>
+  <script src="app-theme.js"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="context-coach.css" />
+  <link rel="stylesheet" href="app-theme.css" />
+</head>
+<body>
+  <main id="app" class="app collapsed">
+    <div id="collapsedShell" class="collapsed-shell">
+      <div id="collapsedProgressRegion" class="collapsed-progress" data-tauri-drag-region title="按住拖动浮窗">
+        <span id="overallRing" class="ring" aria-label="全部任务平均进度"><span id="overallProgress">0</span></span>
+      </div>
+      <div id="collapsedDragRegion" class="collapsed-summary" data-tauri-drag-region title="按住拖动浮窗">
+        <strong id="todaySummary">今日 0/0</strong>
+        <span class="dot">·</span>
+        <span class="urgent"><i></i><span id="urgentSummary">0 项紧急</span></span>
+      </div>
+      <button id="expandButton" class="expand-button" data-tauri-drag-region="false" type="button" aria-label="展开任务浮窗" aria-expanded="false" title="展开">
+        <svg viewBox="0 0 24 8" aria-hidden="true"><path d="M4 2 12 6 20 2"/></svg>
+      </button>
+    </div>
+
+    <section id="panel" class="panel" aria-hidden="true">
+      <header id="dragHandle" class="panel-header" data-tauri-drag-region>
+        <div class="header-copy" data-tauri-drag-region>
+          <h1>今日任务</h1>
+          <p><span id="statusDot" class="status-dot pending"></span><span id="syncStatus">WPS 未配置 · 本地缓存</span></p>
+        </div>
+        <div class="header-actions" data-tauri-drag-region="false">
+          <button id="syncButton" class="icon-button" type="button" aria-label="立即同步" title="立即同步">
+            <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.8-4M4 5v5h5M4 13a8 8 0 0 0 14.8 4M20 19v-5h-5"/></svg>
+          </button>
+          <button id="settingsButton" class="icon-button" type="button" aria-label="设置" title="设置">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .4 1.9l-2.9 2.9A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1.4 1.7h-4A1.7 1.7 0 0 0 8.5 19.4a1.7 1.7 0 0 0-1.9.4l-2.9-2.9A1.7 1.7 0 0 0 4.1 15a1.7 1.7 0 0 0-1.7-1.4v-4A1.7 1.7 0 0 0 4.1 8.5a1.7 1.7 0 0 0-.4-1.9l2.9-2.9A1.7 1.7 0 0 0 8.5 4a1.7 1.7 0 0 0 1.1-1.7h4A1.7 1.7 0 0 0 15 4a1.7 1.7 0 0 0 1.9-.4l2.9 2.9a1.7 1.7 0 0 0-.4 1.9 1.7 1.7 0 0 0 1.7 1.1v4a1.7 1.7 0 0 0-1.7 1.5Z"/></svg>
+          </button>
+          <button id="collapseButton" class="icon-button" type="button" aria-label="收起" title="收起">
+            <svg viewBox="0 0 24 24"><path d="m7 14 5-5 5 5"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <section id="recordView" class="record-view">
+        <button id="recordWorkbenchButton" class="secondary-button full-button" type="button">打开本地任务工作台</button>
+        <button id="recordGuideButton" class="context-guide-link" type="button">一句话操作提示</button>
+        <form id="progressForm" class="progress-form" novalidate>
+          <label for="workInput">今天完成了什么？</label>
+          <textarea id="workInput" rows="2" placeholder="例如：完成了 A 技术方案的关键资料整理"></textarea>
+          <div class="progress-row">
+            <label for="progressInput">完成后总进度</label>
+            <span class="percent-field"><input id="progressInput" type="number" min="0" max="100" step="1" inputmode="numeric" /><b>%</b></span>
+          </div>
+          <div class="analysis-actions" aria-label="选择记录方式">
+            <button id="updateTaskButton" class="primary-button" data-analysis-intent="update" type="submit" disabled>更新已有任务</button>
+            <button id="createTaskButton" class="secondary-button" data-analysis-intent="create" type="submit" disabled>新增任务</button>
+          </div>
+          <p id="formHelp" class="form-help error" role="alert" hidden></p>
+        </form>
+
+        <section id="analysisResult" class="analysis-result" aria-live="polite" hidden></section>
+
+        <div class="task-heading"><strong>优先任务</strong><button id="showHiddenFloatingTasks" class="floating-show-hidden" type="button" hidden>恢复隐藏</button></div>
+        <div id="taskList" class="task-list" aria-label="优先任务"></div>
+      </section>
+
+      <section id="onboardingView" class="onboarding-view" hidden>
+        <div class="settings-heading"><div><h2>开始使用任务工作台</h2><p>先离线使用；需要云端时再连接。</p></div><button id="onboardingBackButton" class="secondary-button" type="button">返回</button></div>
+        <section id="onboardingPlatformPanel" class="connection-form">
+          <h3>选择开始方式</h3>
+          <button id="onboardingLocalButton" class="platform-choice" type="button"><strong>本地任务工作台 · 推荐</strong><span>无需登录或云端配置，即可使用列表、看板、四象限和统计。任务保存在此电脑。</span></button>
+          <button id="onboardingFeishuButton" class="platform-choice" type="button"><strong>连接飞书 · 可选</strong><span>连接飞书身份后创建任务空间，无需查找表格编号；本地与云端同步另行预览、确认。</span></button>
+          <button id="onboardingWpsButton" class="platform-choice" type="button"><strong>WPS 多维表格</strong><span>已有表格可手动连接；一键创建尚未开放。</span></button>
+          <button id="onboardingExistingButton" class="secondary-button full-button" type="button">连接已有表格（高级）</button>
+        </section>
+        <section id="onboardingFeishuPanel" hidden>
+          <button id="feishuGuideButton" class="context-guide-link" type="button">连接步骤提示</button>
+          <ol id="onboardingSteps" class="onboarding-steps" aria-label="连接步骤">
+            <li>1 连接账号</li><li>2 命名空间</li><li>3 创建连接</li><li>4 完成</li>
+          </ol>
+          <p id="onboardingProgress" class="onboarding-progress" role="status" aria-live="polite"></p>
+          <div id="feishuProvisionHost"></div>
+          <button id="onboardingRepairConnectionButton" class="secondary-button full-button" type="button" hidden>检查已有连接（高级）</button>
+          <button id="onboardingRetrySyncButton" class="secondary-button full-button" type="button" hidden>重试读取云端任务（浮窗）</button>
+          <button id="onboardingFinishButton" class="primary-button full-button" type="button" hidden>进入本地任务工作台</button>
+          <p id="onboardingWriteNotice" class="form-help" hidden>飞书连接已保存，不代表本地工作台已同步。在工作台中开启云端访问后，先预览差异，再确认同步；不会自动导入或覆盖本地任务。</p>
+        </section>
+      </section>
+
+      <section id="settingsView" class="settings-view" hidden>
+        <div class="settings-heading"><div><h2>设置</h2><p>管理任务空间、模型和本地偏好。</p></div><button id="closeSettings" class="secondary-button" type="button">返回</button></div>
+        <section class="connection-form appearance-settings" aria-label="外观设置"><h3>外观主题</h3><label class="setting-field"><span>配色</span><select data-theme-select><option value="dark">石墨蓝 · 默认深色</option><option value="light">瓷白蓝 · 可选浅色</option></select></label><p data-theme-status role="status"></p><p class="form-help">自动保存；工作台与浮窗共用此主题，不改变任务数据与云端连接。</p></section>
+        <section class="connection-form">
+          <div class="setting-card connection-heading">
+            <div><strong>当前任务数据源</strong><p>分析界面保持不变；同步、写入和撤销由所选数据源处理。</p></div>
+            <span id="activeSourceBadge" class="status-badge">WPS</span>
+          </div>
+          <label class="setting-field" for="activeSourceSelect"><span>数据源</span><select id="activeSourceSelect">
+            <option value="wps">WPS 多维表格</option>
+            <option value="feishu">飞书多维表格（逐次确认写入）</option>
+          </select></label>
+          <button id="saveActiveSourceButton" class="primary-button full-button" type="button">切换数据源并同步</button>
+        </section>
+        <button id="openOnboardingButton" class="secondary-button full-button" type="button">连接向导 / 查看任务空间</button>
+        <details id="wpsAdvancedConnection" class="advanced-connection"><summary>WPS 手动连接（高级）</summary>
+        <form id="wpsConfigForm" class="connection-form">
+          <div class="setting-card connection-heading">
+            <div><strong>WPS 多维表格</strong><p id="wpsConfigHelp">先连接并验证读取，确认字段后再开启写入。</p></div>
+            <span id="wpsConfigBadge" class="status-badge">未配置</span>
+          </div>
+          <label class="setting-field" for="wpsWebhookInput"><span>文档共享脚本 Webhook</span><input id="wpsWebhookInput" type="url" inputmode="url" autocomplete="off" placeholder="https://www.kdocs.cn/api/v3/ide/file/.../sync_task" /></label>
+          <label class="setting-field" for="wpsSheetInput"><span>任务数据表名称</span><input id="wpsSheetInput" type="text" autocomplete="off" value="任务清单" /></label>
+          <label class="setting-field" for="wpsTokenInput"><span>脚本令牌</span><input id="wpsTokenInput" type="password" autocomplete="new-password" placeholder="保存在 Windows 凭据库" /></label>
+          <div class="setting-actions">
+            <button id="saveWpsButton" class="primary-button" type="submit">保存连接</button>
+            <button id="testWpsButton" class="secondary-button" type="button">测试读取</button>
+          </div>
+        </form>
+        </details>
+        <section class="connection-form" id="feishuProvisionCard" hidden>
+          <div class="setting-card connection-heading">
+            <div><strong id="feishuProvisionTitle">准备飞书任务空间</strong><p>包含任务表、看板和仪表盘；新空间不带个人记录。</p></div>
+            <span id="feishuProvisionBadge" class="status-badge">检查中</span>
+          </div>
+          <div id="feishuWorkspaceProfile">
+          <label class="setting-field" for="feishuWorkspaceNameInput"><span>任务空间名称</span><input id="feishuWorkspaceNameInput" type="text" maxlength="100" value="我的个人任务" autocomplete="off" aria-describedby="feishuWorkspaceNameError" /></label>
+          <p id="feishuWorkspaceNameError" class="form-help error" role="alert" hidden></p>
+          <label class="setting-field" for="feishuWorkspaceFolderLinkInput"><span>保存到飞书文件夹（选填）</span><input id="feishuWorkspaceFolderLinkInput" type="url" inputmode="url" autocomplete="off" placeholder="留空保存到默认位置；或粘贴飞书文件夹链接" /></label>
+          <p class="form-help">从飞书目标文件夹复制链接并粘贴即可；应用只用它定位保存位置，不会读取该文件夹内容。</p>
+          </div>
+          <section id="feishuAccountGuide" class="setting-card" aria-labelledby="feishuAccountGuideTitle">
+            <strong id="feishuAccountGuideTitle">先打开飞书，确认登录身份</strong>
+            <p class="form-help">在飞书页面选择个人用户或所属企业身份，不要选择豆包账号；仅更换扫码方式不会改变身份。</p>
+            <button id="openFeishuIdentityButton" class="secondary-button full-button" type="button">1 打开飞书并确认账号</button>
+            <label class="checkbox-line"><input id="feishuAccountConfirmed" type="checkbox" aria-describedby="feishuAccountDeclarationHelp feishuAccountWarning" />我确认当前选择的是飞书身份，不是豆包账号</label>
+            <p id="feishuAccountDeclarationHelp" class="form-help">这项确认不能自动识别账号类型，连接后仍需检查实际访问权限。</p>
+            <p id="feishuAccountWarning" class="form-help error" role="alert" hidden></p>
+          </section>
+          <button id="authorizeFeishuUserButton" class="primary-button full-button" type="button">2 生成飞书授权链接</button>
+          <p id="feishuAuthorizationHelp" class="form-help">SnapTask 的账号授权用于复制任务模板及读写多维表格。飞书自动创建的智能体应用可能预置消息、通讯录等额外权限；请在飞书授权页和开发者后台核对实际权限。凭据保存在 Windows 凭据库。</p>
+          <section id="feishuAuthorizationPanel" class="setting-card feishu-authorization-panel" aria-live="polite" hidden>
+            <p id="feishuAuthorizationMessage" class="form-help"></p>
+            <a id="feishuAuthorizationLink" class="feishu-workspace-link" target="_blank" rel="noopener noreferrer" hidden>3 打开飞书授权页面</a>
+            <p id="feishuAuthorizationCode" class="feishu-auth-code" hidden></p>
+            <button id="cancelFeishuAuthorizationButton" class="secondary-button full-button" type="button">停止等待（不撤销已完成授权）</button>
+          </section>
+          <button id="createFeishuWorkspaceButton" class="primary-button full-button" type="button" disabled>创建并连接</button>
+          <p id="feishuProvisionHelp" class="form-help" aria-live="polite">正在检查模板和授权状态。</p>
+          <p id="feishuProvisionResult" class="form-help" aria-live="polite" hidden></p>
+          <a id="feishuWorkspaceLink" class="feishu-workspace-link" target="_blank" rel="noopener noreferrer" hidden>打开已创建的任务空间</a>
+          <div id="feishuProvisionRecoveryActions" class="setting-actions" hidden>
+            <button id="resumeFeishuWorkspaceButton" class="primary-button" type="button">继续上次初始化</button>
+            <button id="reconcileFeishuWorkspaceButton" class="secondary-button" type="button">核对复制结果</button>
+          </div>
+        </section>
+        <details id="feishuAdvancedConnection" class="advanced-connection"><summary>飞书已有表格连接（高级）</summary>
+        <form id="feishuConfigForm" class="connection-form">
+          <div class="setting-card connection-heading">
+            <div><strong>飞书多维表格</strong><p id="feishuConfigHelp">浮窗新增、更新与撤销需逐次核对账号和目标；飞书实际写入权限由平台授权决定。</p></div>
+            <span id="feishuConfigBadge" class="status-badge">未配置</span>
+          </div>
+          <label class="setting-field" for="feishuAppIdInput"><span>App ID</span><input id="feishuAppIdInput" type="text" autocomplete="off" placeholder="cli_..." /></label>
+          <label class="setting-field" for="feishuAppSecretInput"><span>App Secret</span><input id="feishuAppSecretInput" type="password" autocomplete="new-password" placeholder="保存在 Windows 凭据库" /></label>
+          <label class="setting-field" for="feishuTableUrlInput"><span>多维表格链接（推荐）</span><input id="feishuTableUrlInput" type="url" inputmode="url" autocomplete="off" placeholder="https://example.feishu.cn/base/...?...table=tbl..." /></label>
+          <label class="setting-field" for="feishuAppTokenInput"><span>多维表格 App Token</span><input id="feishuAppTokenInput" type="text" autocomplete="off" placeholder="链接中 base/ 后的标识" /></label>
+          <label class="setting-field" for="feishuTableIdInput"><span>数据表 ID</span><input id="feishuTableIdInput" type="text" autocomplete="off" placeholder="tbl..." /></label>
+          <div class="setting-actions">
+            <button id="saveFeishuButton" class="primary-button" type="submit">保存连接</button>
+            <button id="testFeishuButton" class="secondary-button" type="button">测试读取</button>
+          </div>
+          <div class="setting-actions feishu-schema-actions">
+            <button id="initializeFeishuWorkspaceButton" class="primary-button" type="button">检查任务空间</button>
+            <button id="downloadFeishuTemplateButton" class="secondary-button" type="button">下载字段导入模板（不含看板）</button>
+          </div>
+          <p id="feishuSchemaHelp" class="form-help">将检查字段、看板、仪表盘和自动化；Excel 备用文件只能导入字段，完整看板和仪表盘需要复制飞书原生模板。</p>
+        </form>
+        </details>
+        <form id="aiConfigForm" class="connection-form">
+          <div class="setting-card connection-heading">
+            <div><strong>AI 模型</strong><p id="aiConfigHelp">本地规则无法唯一判断时，才调用模型。</p></div>
+            <span id="aiConfigBadge" class="status-badge">未配置</span>
+          </div>
+          <label class="setting-field" for="aiProviderSelect"><span>提供商</span><select id="aiProviderSelect">
+            <option value="deepseek">DeepSeek</option>
+            <option value="mimo">小米 MiMo</option>
+            <option value="qwen">阿里千问 Qwen</option>
+            <option value="kimi">Kimi（月之暗面）</option>
+            <option value="glm">智谱 GLM</option>
+            <option value="gemini">Google Gemini</option>
+            <option value="openai">ChatGPT / OpenAI</option>
+            <option value="grok">xAI Grok</option>
+            <option value="generic">通用 OpenAI 兼容接口</option>
+          </select></label>
+          <label id="aiEndpointField" class="setting-field" for="aiEndpointInput" hidden><span>自定义接口地址</span><input id="aiEndpointInput" type="url" inputmode="url" autocomplete="off" placeholder="https://api.example.com/v1" /></label>
+          <label class="setting-field" for="aiKeyInput"><span>API Key</span><input id="aiKeyInput" type="password" autocomplete="new-password" placeholder="保存在 Windows 凭据库" /></label>
+          <button id="loadAiModelsButton" class="secondary-button full-button" type="button">读取可用模型</button>
+          <label class="setting-field" for="aiModelSelect"><span>模型名称</span><select id="aiModelSelect" disabled><option value="">请先读取模型</option></select></label>
+          <div class="inline-setting">
+            <div><strong>不确定时调用 AI</strong><p>任务名精确命中时不调用，节省费用。</p></div>
+            <button id="aiEnabledToggle" class="switch" type="button" role="switch" aria-checked="true"><span></span></button>
+          </div>
+          <div class="setting-actions">
+            <button id="saveAiButton" class="primary-button" type="submit">保存设置</button>
+            <button id="testAiButton" class="secondary-button" type="button">测试模型</button>
+          </div>
+        </form>
+        <section class="connection-form habit-settings">
+          <div class="connection-heading setting-card">
+            <div><strong>习惯表</strong><p>纠正后的说法优先在本机匹配，减少重复调用 AI。</p></div>
+            <span id="habitCountBadge" class="status-badge reserved">0 条</span>
+          </div>
+          <button id="toggleHabitsButton" class="secondary-button full-button" type="button" aria-expanded="false">查看习惯</button>
+          <div id="habitListPanel" class="habit-list-panel" hidden>
+            <div id="habitList" class="habit-list"></div>
+          </div>
+        </section>
+        <section class="connection-form queue-settings">
+          <div class="connection-heading setting-card">
+            <div><strong>待同步与冲突</strong><p>仅异常时需要处理；正常记录会自动同步。</p></div>
+            <span id="queueCountBadge" class="status-badge reserved">0 项</span>
+          </div>
+          <button id="toggleQueueButton" class="secondary-button full-button" type="button" aria-expanded="false">查看队列</button>
+          <div id="queueListPanel" class="habit-list-panel" hidden>
+            <div id="queueList" class="habit-list"></div>
+          </div>
+        </section>
+        <div class="setting-card">
+          <div><strong>本地任务工作台</strong><p>离线使用列表、看板、四象限和统计；与云端任务分开保存。</p></div>
+          <button id="openLocalWorkbenchButton" class="secondary-button" type="button">打开</button>
+        </div>
+        <div class="setting-card">
+          <div><strong>随 Windows 启动</strong><p>启动后保持收起，可从托盘恢复</p></div>
+          <button id="autostartToggle" class="switch" type="button" role="switch" aria-checked="false"><span></span></button>
+        </div>
+        <div class="setting-card">
+          <div><strong>后台同步</strong><p>连接任务空间后每 30 分钟执行</p></div>
+          <b>30 min</b>
+        </div>
+        <div class="privacy-note"><strong>轻量运行</strong><p>Rust 后台 + 系统 WebView2；不打包 Chromium，不启动 Node.js 运行时。</p></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="taskRemovalDialog" class="task-removal-dialog" aria-labelledby="taskRemovalTitle" aria-describedby="taskRemovalHelp">
+    <h2 id="taskRemovalTitle">处理这条任务</h2>
+    <strong id="taskRemovalName"></strong>
+    <p id="taskRemovalTarget" class="task-removal-target"></p>
+    <p id="taskRemovalHelp">仅隐藏会从当前浮窗移除，刷新后仍保持隐藏，可随时恢复。云端记录和本地工作台任务都保留。</p>
+    <p id="taskRemovalCloudHelp">删除飞书记录会删除云端整条记录，之后还会核对账号和目标。本按钮不提供云端删除撤销。</p>
+    <p id="taskRemovalError" class="task-removal-error" role="alert" hidden></p>
+    <div class="task-removal-actions">
+      <button id="hideFloatingTaskButton" class="primary-button" type="button">仅从浮窗隐藏</button>
+      <button id="deleteFloatingCloudButton" class="secondary-button task-cloud-delete" type="button">删除飞书记录…</button>
+      <button id="cancelTaskRemovalButton" class="secondary-button" type="button" autofocus>取消</button>
+    </div>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script src="app.js"></script>
+  <script type="module" src="main-context-guide.mjs"></script>
+</body>
+</html>

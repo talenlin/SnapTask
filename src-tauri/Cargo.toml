@@ -1,0 +1,46 @@
+[package]
+name = "snaptask"
+version = "0.2.2"
+description = "SnapTask: a local-first Windows task workbench with quick capture and optional Feishu sync"
+authors = ["SnapTask contributors"]
+edition = "2021"
+
+[lib]
+name = "snaptask_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.3", features = [] }
+
+[features]
+default = []
+feishu-write-acceptance = []
+feishu-template-v2-acceptance = []
+feishu-release-ui-acceptance = []
+local-workbench-acceptance = []
+feishu-direct-account-acceptance = []
+feishu-direct-sync-ui-acceptance = ["feishu-direct-account-acceptance", "local-workbench-acceptance", "feishu-template-v2-acceptance"]
+local-sync-fault-ui-acceptance = ["local-workbench-acceptance", "feishu-template-v2-acceptance"]
+local-main-flow-ui-acceptance = []
+
+[dependencies]
+rusqlite = { version = "0.37", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+rfd = "0.15"
+tauri = { version = "2.11.6", features = ["tray-icon"] }
+tauri-plugin-opener = "2.5.5"
+tauri-plugin-autostart = "2.5.1"
+tauri-plugin-single-instance = "2.4.5"
+
+[target.'cfg(windows)'.dependencies]
+keyring = { version = "3.6.3", default-features = false, features = ["windows-native"] }
+windows-sys = { version = "0.61", features = ["Win32_Graphics_Dwm", "Win32_System_LibraryLoader"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

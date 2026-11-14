@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>本地任务工作台</title><script src="app-theme.js"></script><link rel="stylesheet" href="local-workbench.css"><link rel="stylesheet" href="context-coach.css"><link rel="stylesheet" href="app-theme.css"><link rel="stylesheet" href="workbench-paper.css"><link rel="stylesheet" href="workbench-layout-b.css"></head>
+<body class="paper-workbench layout-b">
+  <div class="workspace-shell">
+  <aside class="workspace-header" aria-label="工作台导航">
+    <div class="workspace-brand"><div class="brand"><span class="brand-mark" aria-hidden="true">✓</span><div>任务工作台</div></div><p class="workspace-motto">让计划，落到今天。</p></div>
+    <nav class="views" aria-label="任务视图"><button data-view="list" data-icon="list" aria-current="page">任务列表</button><button data-view="board" data-icon="board">状态看板</button><button data-view="quadrants" data-icon="quadrants">四象限</button><button data-view="calendar" data-icon="calendar">计划日历</button><button data-view="stats" data-icon="stats">统计</button></nav>
+    <div class="workspace-tools"><button id="guide-open" disabled>使用引导</button><button id="backup-button" data-icon="backup" disabled>备份与恢复</button><button id="settings-button" disabled>设置</button><button type="button" data-theme-toggle>切换浅色</button></div>
+  </aside>
+  <main>
+    <header class="topbar"><div class="workspace-view-title"><h1 id="view-title">任务列表</h1><time id="workspace-date"></time></div><div class="actions"><button id="undo" data-icon="undo" aria-keyshortcuts="Control+Z" title="撤销上一步任务操作（Ctrl+Z）" disabled>撤销</button><button id="sync-button" disabled>飞书同步</button><button id="add" data-icon="add" class="primary" disabled>新增任务</button></div></header>
+    <div class="toolbar"><label class="search"><span class="sr-only">搜索任务名称或详情</span><input id="search" type="search" placeholder="搜索任务名称或详情" maxlength="200"></label><label><span class="sr-only">任务范围</span><select id="scope"><option value="all">全部任务</option><option value="today">今日待办</option><option value="overdue">逾期未完成</option><option value="completed">已完成</option><option value="trash">回收站</option></select></label><button id="refresh">刷新</button></div>
+    <div class="workspace-content-head"><h2 id="work-area-title">我的任务</h2><section id="overview" class="overview" aria-label="任务概览"></section></div>
+    <p id="message" role="status" aria-live="polite">正在读取本地任务…</p>
+    <div class="work-area"><section id="content" aria-label="任务内容" aria-busy="true"></section><aside id="plan-summary" class="plan-summary" aria-label="计划日历与当前筛选进度" hidden></aside></div>
+    <details class="storage-details"><summary>数据存储说明</summary><footer id="storage-note">任务保存在独立的本地数据库中；不会自动导入或同步云端任务。关闭窗口后仍会保留。</footer></details>
+  </main>
+  </div>
+  <dialog id="editor" aria-labelledby="editor-title">
+    <form id="task-form"><div class="dialog-head"><h2 id="editor-title">新增任务</h2><button id="cancel-top" type="button" aria-label="关闭任务详情">关闭</button></div>
+      <label>任务名称<input name="title" required maxlength="200" autocomplete="off"></label>
+      <label>任务详情<textarea name="detail" rows="3" maxlength="10000"></textarea></label>
+      <div class="form-grid"><label>完成进度（%）<input name="progress" type="number" min="0" max="100" step="1" required value="0"><span id="status-hint">未开始</span></label><label>四象限<select name="quadrant"><option value="iu">重要且紧急</option><option value="in" selected>重要不紧急</option><option value="un">紧急不重要</option><option value="nn">不重要不紧急</option></select></label><label>开始日期<input name="startDate" type="date"></label><label>计划完成日期<input name="plannedDate" type="date"></label></div>
+      <label class="check"><input name="today" type="checkbox">列入今日待办</label>
+      <section id="ime-activity-section" hidden><h3>输入法完成记录</h3><ul id="ime-activity-list"></ul></section>
+      <p class="hint">进度 0% 为未开始，1–99% 为进行中，100% 为已完成。调低进度会自动回退状态。</p>
+      <p id="content-time" class="hint"></p>
+      <p id="form-error" role="alert" hidden></p>
+      <div class="dialog-actions"><button id="trash" type="button" class="danger" hidden>移入回收站</button><span class="spacer"></span><button id="cancel" type="button">取消</button><button id="save" type="submit" class="primary">保存任务</button></div>
+    </form>
+  </dialog>
+  <dialog id="move-panel" aria-labelledby="move-title">
+    <form id="move-form">
+      <div class="dialog-head"><h2 id="move-title">移动任务状态</h2><button id="move-close" type="button">关闭</button></div>
+      <p id="move-summary"></p>
+      <label>移动后的进度（%）<input id="move-progress" type="number" min="0" max="100" step="1" required></label>
+      <p id="move-hint" class="hint"></p>
+      <p class="hint">仅改变进度及其对应状态；名称、详情、日期和四象限保持不变。确认前不会保存。</p>
+      <p id="move-error" role="alert" hidden></p>
+      <div class="dialog-actions"><button id="move-cancel" type="button">取消</button><button id="move-confirm" type="submit" class="primary">确认移动</button></div>
+    </form>
+  </dialog>
+  <dialog id="backup-panel" aria-labelledby="backup-title">
+    <div class="dialog-head"><h2 id="backup-title">备份与恢复</h2><button id="backup-close" type="button">关闭</button></div>
+    <p class="hint">完整备份包含任务、回收站和撤销历史，不含飞书/WPS连接或密钥。JSON 文件未加密，请妥善保存。</p>
+    <div class="dialog-actions"><button id="backup-export" type="button" class="primary">导出完整备份</button><button id="backup-pick" type="button">选择备份并预览</button></div>
+    <section><h3>从旧工作台迁移</h3><p class="hint">只读检查之前使用的工作台目录，预览任务与历史；不会自动合并。确认后复用下方保护备份与整体恢复流程，不导入云端连接、同步许可或快捷键。</p><button id="legacy-preview" type="button">预览旧工作台数据（不修改）</button></section>
+    <section class="csv-section"><h3>任务清单导出</h3><p class="hint">导出全部未删除任务，不受筛选影响，可在表格软件中查看。CSV 不含撤销历史，不能代替完整备份；公式样式文字会加文本前缀。暂不支持 CSV 导入。</p><button id="csv-export" type="button">导出任务 CSV</button></section>
+    <input id="restore-file" type="file" accept=".json,application/json" aria-label="选择工作台 JSON 备份" hidden>
+    <p id="backup-status" role="status" aria-live="polite"></p>
+    <section id="restore-preview" hidden aria-labelledby="restore-title">
+      <h3 id="restore-title">恢复预览 · 尚未修改数据</h3>
+      <p id="restore-source" class="hint"></p><p id="restore-counts"></p>
+      <ul id="restore-samples"></ul>
+      <p class="hint">确认后会整体替换当前本地任务，不自动合并。恢复前会自动保存并核验当前数据的保护备份；若保存失败，本次恢复终止。</p>
+      <p class="hint">恢复会解除旧同步连接和任务关联，使未完成批次的执行许可失效。同步前须重新确认连接；待核实的写入日志保留，不自动重发。</p>
+      <label class="check"><input id="restore-choice" type="checkbox">我确认用此备份整体替换当前本地任务</label>
+      <div class="dialog-actions"><button id="restore-confirm" type="button" class="danger" disabled>保存保护备份并恢复</button></div>
+    </section>
+  </dialog>
+  <dialog id="sync-panel" aria-labelledby="sync-title">
+    <div class="dialog-head"><div><p class="eyebrow">任务工作台</p><h2 id="sync-title">飞书同步</h2></div><button id="sync-close" type="button">关闭</button></div>
+    <p class="hint">先读取飞书任务，再选择要导入或更新的记录。读取不会修改任何任务。</p>
+    <div class="dialog-actions sync-main-actions"><button id="sync-example" type="button">查看模拟示例</button><button id="sync-cloud-check" type="button" disabled>读取飞书任务</button></div>
+    <p id="sync-status" role="status" aria-live="polite"></p>
+    <section id="sync-primary" aria-label="飞书任务与快捷操作"></section>
+    <details id="sync-connection-details" class="sync-fold"><summary>连接与权限设置</summary><div id="sync-access"></div><p id="sync-cloud-hint" class="hint"></p><p id="sync-identity" class="hint"></p></details>
+    <button id="sync-reauthorize" type="button" hidden>重新授权隔离测试连接（不创建新应用）</button>
+    <section id="sync-auth" class="sync-row" hidden aria-label="隔离测试连接重新授权">
+      <p>仅续接此验收程序固定的既有应用；凭据保存到Windows隔离会话。不要切换到其他应用或表格，不需填写密钥。授权后仍需只读检查实际身份，不会自动同步。</p>
+      <p id="sync-auth-status" role="status" aria-live="polite"></p>
+      <div class="dialog-actions"><button id="sync-auth-open" type="button" disabled>打开隔离应用授权页面</button><button id="sync-auth-poll" type="button" disabled>检查授权结果</button><button id="sync-auth-cancel" type="button" disabled>停止等待（不撤销授权）</button></div>
+    </section>
+    <details id="sync-advanced" class="sync-fold" hidden><summary>高级操作：任务关联、双端覆盖与批次记录</summary><section id="sync-content" aria-label="同步检查结果" aria-busy="false"></section></details>
+  </dialog>
+  <dialog id="shortcut-panel" aria-labelledby="shortcut-title">
+    <div class="dialog-head"><div><p class="eyebrow">本地工作台</p><h2 id="shortcut-title">设置</h2></div><button id="shortcut-close" type="button">关闭</button></div>
+    <section class="appearance-settings" aria-label="外观设置"><h3>外观主题</h3><label>配色<select data-theme-select><option value="dark">石墨蓝 · 默认深色</option><option value="light">瓷白蓝 · 可选浅色</option></select></label><p data-theme-status role="status"></p><p class="hint">工作台和任务浮窗共用此选择；与下方快捷键草稿分别保存，不影响任务或同步设置。</p></section>
+    <section class="appearance-settings" aria-label="输入法接口设置">
+      <h3>输入法接口</h3><p class="hint">默认关闭。开启后只接收本机请求，更新本地任务；不会自动写入飞书。</p>
+      <div class="dialog-actions"><button id="ime-toggle" type="button">开启接口</button><button id="ime-rotate" type="button" disabled>重新生成令牌</button></div>
+      <p id="ime-status" role="status"></p><p id="ime-address" class="hint"></p>
+      <label id="ime-token-wrap" hidden>连接令牌（仅此次显示，请复制到输入法）<textarea id="ime-token" readonly rows="2" spellcheck="false"></textarea></label>
+      <h4>待确认输入</h4><div id="ime-reviews"></div>
+    </section>
+    <p class="hint">仅在此工作台窗口内生效。视图切换仅限主视图，输入框、弹窗或拖动中不切换；输入框保留文字撤销。Tab、Enter、Esc 等标准导航键不改动。设置不包含在任务备份中。</p>
+    <div id="shortcut-rows"></div>
+    <details><summary>快捷键配置保留与迁移</summary><p class="hint">同一应用身份升级沿用当前窗口设置；任务恢复不修改快捷键。不同独立程序的设置不自动复制，可用配置文本预览后保存。旧版没有导出入口时，请记录原按键并在此重新设置；不要复制整个浏览器数据目录。</p><button id="shortcut-export-text" type="button">显示已保存配置文本</button><label for="shortcut-transfer">配置文本（不含任务、账号或密钥）</label><textarea id="shortcut-transfer" rows="5" maxlength="16384" spellcheck="false"></textarea><button id="shortcut-preview-text" type="button">校验并预览为草稿</button></details>
+    <section id="shortcut-recorder" hidden aria-labelledby="shortcut-record-label">
+      <label id="shortcut-record-label" for="shortcut-record">按下新组合键</label>
+      <input id="shortcut-record" readonly autocomplete="off" aria-describedby="shortcut-status">
+      <div class="dialog-actions"><button id="shortcut-record-cancel" type="button">取消录入</button><button id="shortcut-use" type="button" disabled>使用此组合键</button></div>
+    </section>
+    <p id="shortcut-status" role="status" aria-live="polite"></p>
+    <div class="dialog-actions"><button id="shortcut-defaults" type="button">恢复全部默认</button><span class="spacer"></span><button id="shortcut-cancel" type="button">取消</button><button id="shortcut-save" type="button" class="primary">保存设置</button></div>
+  </dialog>
+  <script type="module" src="local-workbench.js"></script>
+</body></html>

@@ -1,0 +1,10 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "local-workbench",
+  "description": "本地工作台，仅允许在用户点击时打开飞书目标表，不提供文件系统访问权限",
+  "windows": ["local-workbench"],
+  "permissions": ["core:default", "core:window:allow-set-theme", {
+    "identifier": "opener:allow-open-url",
+    "allow": [{ "url": "https://my.feishu.cn/base/*" }]
+  }]
+}

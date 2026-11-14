@@ -1,0 +1,98 @@
+/* C's editorial layout. Existing task actions and IDs remain the source of truth. */
+.paper-workbench { min-width:0; background:var(--bg); }
+.paper-workbench main { max-width:1600px; margin:0 auto; padding:30px 32px; }
+.workspace-header { display:flex; flex-wrap:wrap; align-items:center; gap:20px; min-height:76px; padding:16px 32px; background:var(--nav-bg); border-bottom:1px solid var(--line); }
+.workspace-header .brand { padding:0; gap:10px; }
+.workspace-header .brand small { display:none; }
+.workspace-header .brand-mark { border:1px solid var(--ink); border-radius:50%; background:transparent; color:var(--ink); width:28px; height:28px; font-size:18px; }
+.workspace-identity { color:var(--muted); font-size:13px; }
+.workspace-tools { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-left:auto; }
+.workspace-tools button { display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:38px; padding:7px 10px; border-color:transparent; background:transparent; color:var(--muted); font-size:13px; white-space:nowrap; }
+.workspace-tools button:hover:not(:disabled) { color:var(--accent); background:var(--soft); }
+.workspace-tools [data-theme-toggle] { color:var(--accent); border:1px solid var(--line); border-radius:5px; }
+.workspace-tools #guide-open { border-color:var(--guide-entry-line); background:var(--guide-entry-bg); color:var(--guide-entry-ink); }
+.workspace-tools .icon { width:17px; height:17px; }
+.paper-workbench .topbar { margin:0 0 24px; padding:8px 0 20px; }
+.paper-workbench .topbar h1 { font:500 32px/1.5 Georgia,"SimSun",serif; letter-spacing:.04em; }
+.paper-workbench .eyebrow { font-size:13px; margin-bottom:8px; }
+.workspace-subtitle { display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:8px; }
+.workspace-subtitle time { color:var(--muted); font-size:13px; }
+.paper-workbench .actions button { border-radius:5px; }
+.paper-workbench #undo { color:var(--muted); background:transparent; border-color:transparent; }
+.workspace-nav { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0 20px; border-block:1px solid var(--line); margin-bottom:20px; }
+.workspace-nav .views { display:flex; flex-direction:row; flex-wrap:wrap; gap:16px; padding:0; border:0; overflow:visible; }
+.workspace-nav .views button { min-height:50px; padding:12px 0; border-radius:0; border:0; border-bottom:2px solid transparent; background:none; box-shadow:none; color:var(--muted); gap:6px; }
+.workspace-nav .views button[aria-current] { color:var(--accent); border-bottom-color:var(--accent); background:none; box-shadow:none; }
+.workspace-nav .views .icon { width:17px; height:17px; }
+.paper-workbench .overview { margin:0; padding:8px 0; gap:12px; background:transparent; border:0; border-radius:0; flex-wrap:wrap; }
+.paper-workbench .overview-label { display:none; }
+.paper-workbench .overview-item { padding:0; border:0; gap:5px; }
+.paper-workbench .overview-item span { font-size:12px; }
+.paper-workbench .overview-item strong { font-size:14px; font-weight:500; }
+.paper-workbench .toolbar { margin:0 0 12px; }
+.paper-workbench .search { max-width:none; }
+.paper-workbench .toolbar input { background:transparent; border-color:var(--line-strong); }
+.paper-workbench .toolbar select,.paper-workbench .toolbar button { background:var(--raised); }
+.paper-workbench #message { font-size:13px; min-height:20px; }
+.work-area { min-width:0; }
+.paper-workbench[data-active-view="list"][data-scope]:not([data-scope="trash"]) .work-area { display:grid; grid-template-columns:minmax(0,1fr) 220px; gap:24px; align-items:start; }
+.paper-workbench #content { min-width:0; }
+.paper-workbench .table-wrap { border:0; border-radius:0; box-shadow:none; background:transparent; }
+.paper-workbench th,.paper-workbench td { padding:18px 10px; border-color:var(--line); }
+.paper-workbench th { font-size:13px; font-weight:400; background:transparent; border-bottom:1px solid var(--muted); padding-top:0; }
+.paper-workbench th:first-child { width:34%; }
+.paper-workbench th:first-child,.paper-workbench td:first-child { padding-left:0; }
+.paper-workbench td { font-size:13px; }
+.paper-workbench tbody tr:hover { background:var(--soft); }
+.paper-workbench td .task-link { font-size:15px; line-height:1.6; padding:0; color:var(--ink); font-weight:600; }
+.task-row-detail { font-size:12px; color:var(--muted); margin-top:5px; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; overflow-wrap:anywhere; }
+.paper-workbench .badge { font-size:12px; border-radius:4px; }
+.paper-workbench .status-todo { background:var(--soft); color:var(--muted); }
+.paper-workbench .status-doing { background:var(--blue-soft); color:var(--blue); }
+.paper-workbench .status-done { background:var(--green-soft); color:var(--green); }
+.paper-workbench .progress { gap:8px; }
+.paper-workbench progress { appearance:none; -webkit-appearance:none; border:0; background:var(--line); border-radius:8px; overflow:hidden; width:90px; height:5px; accent-color:var(--green); }
+.paper-workbench progress::-webkit-progress-bar { background:var(--line); border-radius:8px; }
+.paper-workbench progress::-webkit-progress-value { background:var(--green); border-radius:8px; }
+.paper-workbench .task-card,.paper-workbench .metric,.paper-workbench .chart,.paper-workbench .unscheduled { background:var(--raised); border-color:var(--line); border-radius:7px; box-shadow:none; }
+.paper-workbench .task-card:hover:not(:disabled) { background:var(--soft); border-color:var(--muted); box-shadow:none; }
+.paper-workbench .task-card.dragging { background:var(--accent-soft); border-color:var(--accent); }
+.paper-workbench .lane { background:var(--soft); border-color:var(--line); border-radius:7px; }
+.paper-workbench .lane-head span { background:var(--raised); color:var(--muted); }
+.paper-workbench .lane.drop-target { background:var(--accent-soft); }
+.paper-workbench .calendar-grid { background:var(--raised); border-color:var(--line); }
+.paper-workbench .calendar-weekday,.paper-workbench .calendar-blank { background:var(--soft); }
+.paper-workbench .calendar-day { background:var(--surface); }
+.paper-workbench .calendar-task { background:var(--soft); color:var(--ink); border-left-color:var(--muted); }
+.paper-workbench .calendar-task[data-status="doing"] { background:var(--blue-soft); border-left-color:var(--blue); }
+.paper-workbench .calendar-task[data-status="done"] { background:var(--green-soft); border-left-color:var(--green); }
+.paper-workbench .is-today .calendar-number { background:var(--accent); color:var(--accent-ink); }
+.plan-summary { min-width:0; }
+.plan-calendar { padding:16px; background:var(--soft); border:1px solid var(--line); border-radius:7px; }
+.plan-calendar header { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:16px; }
+.plan-calendar h2 { font:500 17px/1.4 Georgia,"SimSun",serif; white-space:nowrap; }
+.plan-calendar header button { min-height:28px; min-width:28px; padding:0; border:0; background:transparent; }
+.plan-week,.plan-days { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); text-align:center; }
+.plan-week { font-size:12px; color:var(--muted); margin-bottom:8px; }
+.plan-days span { position:relative; min-height:27px; display:grid; place-items:center; font-size:12px; }
+.plan-days .today-date { color:var(--accent-ink); background:var(--accent); border-radius:50%; }
+.plan-days .has-task::after { content:''; width:4px; height:4px; background:var(--green); position:absolute; bottom:1px; border-radius:50%; }
+.plan-calendar .calendar-open { display:block; width:100%; min-height:36px; font-size:12px; padding:8px 0 0; border:0; border-top:1px solid var(--line); border-radius:0; background:none; color:var(--muted); margin-top:12px; }
+.plan-progress { border-top:1px solid var(--line); margin-top:24px; padding-top:20px; color:var(--muted); font-size:12px; }
+.plan-progress strong { display:block; color:var(--ink); font:500 44px/1.4 Georgia,serif; }
+.plan-progress strong small { font-size:20px; }
+.plan-progress progress { display:block; width:100%; margin:16px 0 10px; }
+.paper-workbench .storage-details { margin-top:28px; font-size:13px; border-color:var(--line); }
+.paper-workbench footer { color:var(--muted); }
+.paper-workbench dialog { background:var(--raised); border-color:var(--line); border-radius:8px; box-shadow:var(--shadow); }
+.paper-workbench dialog::backdrop { background:var(--scrim); }
+.paper-workbench .shortcut-row { border-color:var(--line); }
+.paper-workbench .shortcut-row kbd,.paper-workbench #shortcut-recorder { background:var(--soft); border-color:var(--line); }
+.paper-workbench #shortcut-status { color:var(--green); }
+.paper-workbench #shortcut-status[data-error="true"] { color:var(--red); }
+.paper-workbench .sync-conflict-warning { background:var(--amber-soft); color:var(--amber); border-color:var(--amber); }
+.paper-workbench .sync-row[data-state="conflict"],.paper-workbench .sync-row[data-state="manual"],.paper-workbench .sync-row[data-state="unverified"] { border-left-color:var(--amber); }
+@media(max-width:1150px) { .workspace-identity { display:none; } .workspace-nav { align-items:flex-start; } .paper-workbench .overview { width:100%; border-top:1px solid var(--line); } .workspace-header { gap:12px; } .paper-workbench th,.paper-workbench td { padding-inline:8px; } }
+@media(max-width:960px) { .paper-workbench[data-active-view="list"][data-scope]:not([data-scope="trash"]) .work-area { grid-template-columns:minmax(0,1fr); } .plan-summary { display:grid; grid-template-columns:220px 1fr; gap:24px; } .plan-progress { margin-top:0; } }
+@media(max-width:760px) { .workspace-header { padding:16px 20px; } .workspace-tools { margin-left:0; } .paper-workbench main { padding:24px 20px; } .workspace-nav .views { gap:12px; } .workspace-nav .views button { font-size:14px; } .workspace-nav .views .icon { display:none; } .paper-workbench .topbar h1 { font-size:27px; } .paper-workbench .topbar { gap:16px; flex-wrap:wrap; } .paper-workbench .topbar .actions { justify-content:flex-start; } .paper-workbench .board,.paper-workbench .quadrants { grid-template-columns:1fr; } }
+@media(max-width:550px) { .plan-summary { grid-template-columns:1fr; } .workspace-tools { gap:4px; } .paper-workbench .overview { gap:8px 14px; } }

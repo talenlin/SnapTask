@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>飞书身份独立连接验收</title><link rel="stylesheet" href="direct-account-auth.css" />
+</head>
+<body><main>
+  <h1>连接新的飞书身份</h1>
+  <p>独立验收工具 · 不读取或修改本地任务、飞书记录、旧连接和同步队列。</p>
+  <section><h2>1. 保存新应用凭据</h2>
+    <p>仅连接“任务工作台-飞书身份隔离验收-20261020”。请从刚创建的飞书页面自行复制密钥，不要发送到聊天。</p>
+    <label>固定 App ID<input id="app-id" value="cli_0000000000000003" readonly /></label>
+    <label>新应用 App Secret<input id="app-secret" type="password" autocomplete="new-password" /></label>
+    <label class="check"><input id="identity-confirmed" type="checkbox" />我确认使用飞书身份（非豆包账号），并同意将该应用密钥及随后授权的会话保存到本工具独立的 Windows 凭据库。</label>
+    <button id="save">保存新应用密钥</button>
+    <p id="saved-status" role="status"></p>
+  </section>
+  <section><h2>2. 检查平台访问，再授权</h2>
+    <p>“检查应用令牌”仅向飞书请求一次临时应用令牌，不保存令牌、不访问任务数据，不自动重试。成功不代表任务表读写已通过。</p>
+    <div class="actions"><button id="check-token" disabled>检查应用令牌（只读诊断）</button><button id="start" disabled>开始飞书身份授权</button></div>
+    <p id="token-status" role="status"></p>
+    <p id="auth-status" role="status"></p>
+    <div class="actions"><button id="open" disabled>打开飞书授权页面</button><button id="poll" disabled>检查授权结果</button><button id="cancel" disabled>停止等待</button></div>
+  </section>
+  <p id="error" role="alert"></p>
+  <p>确认框不是账号类型自动检测。网页必须选择新应用所属的飞书身份；创建、授权、API可用和同步验收是不同步骤。此工具没有创建任务或同步入口。</p>
+</main><script type="module" src="direct-account-auth.mjs"></script></body>
+</html>

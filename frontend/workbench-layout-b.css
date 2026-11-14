@@ -1,0 +1,95 @@
+/* Compact left-rail workbench: primary task content stays in the first viewport. */
+.layout-b .workspace-shell { display:grid; grid-template-columns:190px minmax(0,1fr); min-height:100dvh; }
+.layout-b .workspace-header { position:sticky; top:0; align-self:start; height:100dvh; min-height:0; padding:20px 15px 18px; display:flex; flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:0; background:var(--nav-bg); border-right:1px solid var(--line); border-bottom:0; overflow:auto; }
+.layout-b .workspace-brand .brand { align-items:center; gap:9px; padding:0; white-space:nowrap; font-size:16px; }
+.layout-b .workspace-brand .brand-mark { width:27px; height:27px; }
+.layout-b .workspace-motto { margin:20px 0 23px; color:var(--ink); font:400 16px/1.35 Georgia,"SimSun",serif; letter-spacing:.01em; }
+.layout-b .views { display:flex; flex-direction:column; flex-wrap:nowrap; gap:4px; padding:0; margin:0; border:0; overflow:visible; }
+.layout-b .views button { display:flex; align-items:center; gap:10px; width:100%; min-height:42px; padding:9px 11px; background:transparent; color:var(--muted); border:0; border-left:3px solid transparent; border-radius:5px; text-align:left; font-size:14px; white-space:nowrap; box-shadow:none; }
+.layout-b .views button[aria-current] { color:var(--ink); background:var(--accent-soft); border-left-color:var(--accent); box-shadow:none; }
+.layout-b .views button:hover:not(:disabled) { background:var(--soft); color:var(--ink); }
+.layout-b .views .icon { width:17px; height:17px; }
+.layout-b .workspace-tools { display:flex; flex-direction:column; align-items:stretch; flex-wrap:nowrap; gap:2px; width:100%; margin:auto 0 0; padding-top:12px; border-top:1px solid var(--line); }
+.layout-b .workspace-tools button { justify-content:flex-start; width:100%; min-height:38px; padding:7px 10px; background:transparent; border:1px solid transparent; color:var(--muted); text-align:left; }
+.layout-b .workspace-tools #guide-open { color:var(--guide-entry-ink); border-color:var(--guide-entry-line); background:var(--guide-entry-bg); margin-bottom:5px; }
+.layout-b .workspace-tools #guide-open:hover:not(:disabled) { background:var(--guide-entry-bg); border-color:var(--guide-entry-line); }
+.layout-b .workspace-tools [data-theme-toggle] { color:var(--muted); border-color:transparent; }
+.layout-b .workspace-tools button:hover:not(:disabled) { color:var(--ink); background:var(--soft); }
+.layout-b main { min-width:0; max-width:none; margin:0; padding:0; }
+.layout-b .topbar { min-height:62px; margin:0; padding:7px 23px; gap:14px; border-bottom:1px solid var(--line); }
+.layout-b .workspace-view-title { display:flex; align-items:center; gap:12px; min-width:0; }
+.layout-b .topbar h1 { font:650 20px/1.3 system-ui,"Microsoft YaHei",sans-serif; letter-spacing:0; white-space:nowrap; }
+.layout-b #workspace-date { color:var(--muted); font-size:12px; white-space:nowrap; }
+.layout-b .topbar .actions { gap:6px; margin-left:auto; flex-wrap:nowrap; }
+.layout-b .topbar .actions button { min-height:38px; padding:7px 9px; font-size:13px; }
+.layout-b #undo,#sync-button { color:var(--muted); background:transparent; border-color:transparent; }
+.layout-b #sync-button:hover:not(:disabled) { color:var(--ink); background:var(--soft); }
+.layout-b #add { padding-inline:13px; }
+.layout-b .toolbar { margin:0; padding:13px 23px 7px; gap:10px; }
+.layout-b .toolbar .search { min-width:0; max-width:none; }
+.layout-b .toolbar input,.layout-b .toolbar select,.layout-b .toolbar button { min-height:40px; }
+.layout-b .workspace-content-head { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:45px; margin:0 23px; }
+.layout-b .workspace-content-head h2 { font-size:18px; white-space:nowrap; }
+.layout-b .overview { width:auto; display:flex; align-items:center; flex-wrap:wrap; gap:4px 11px; margin:0; padding:0; border:0; background:transparent; }
+.layout-b .overview-label { display:none; }
+.layout-b .overview-item { display:inline-flex; align-items:center; gap:4px; padding:0; border:0; white-space:nowrap; }
+.layout-b .overview-item span { font-size:12px; }
+.layout-b .overview-item strong { font-size:13px; }
+.layout-b #message { position:fixed; right:20px; bottom:20px; z-index:12; max-width:min(460px,calc(100vw - 40px)); min-height:0; margin:0; padding:9px 13px; border:1px solid var(--line); border-radius:7px; background:var(--raised); box-shadow:var(--shadow); font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
+.layout-b #message[data-passive="true"] { position:absolute; width:1px; height:1px; max-width:none; padding:0; margin:-1px; border:0; overflow:hidden; clip-path:inset(50%); white-space:nowrap; box-shadow:none; }
+.layout-b .work-area { min-width:0; margin:0 23px; padding:0; }
+.layout-b[data-active-view="list"][data-scope]:not([data-scope="trash"]) .work-area { display:grid; grid-template-columns:minmax(0,1fr) 195px; gap:16px; align-items:start; }
+.layout-b .table-wrap { border:1px solid var(--line); border-radius:8px; background:var(--raised); }
+.layout-b .table-wrap table { min-width:650px; }
+.layout-b .table-wrap th,.layout-b .table-wrap td { padding:11px 9px; }
+.layout-b .table-wrap th:first-child,.layout-b .table-wrap td:first-child { padding-left:12px; }
+.layout-b .table-wrap td .task-link { font-size:14px; }
+.layout-b .task-row-detail { margin-top:3px; }
+.layout-b .plan-calendar { padding:13px; }
+.layout-b .plan-calendar header { margin-bottom:10px; }
+.layout-b .plan-week { margin-bottom:5px; }
+.layout-b .plan-days span { min-height:24px; }
+.layout-b .plan-progress { margin-top:12px; padding:14px 13px; border:1px solid var(--line); border-radius:7px; background:var(--raised); }
+.layout-b .plan-progress strong { font-size:30px; }
+.layout-b .empty { padding:34px 18px; }
+.layout-b #empty-migration-notice { display:flex; justify-content:center; margin:12px 0 0; }
+.layout-b .empty-migration-notice button { min-height:36px; padding:4px 8px; background:transparent; border-color:transparent; color:var(--accent); font-size:12px; }
+.layout-b .storage-details { margin:24px 23px 28px; }
+@media (max-width:1100px) {
+  .layout-b[data-active-view="list"][data-scope]:not([data-scope="trash"]) .work-area { grid-template-columns:minmax(0,1fr); }
+  .layout-b .plan-summary { display:grid; grid-template-columns:195px minmax(0,1fr); gap:12px; margin-top:18px; }
+  .layout-b .plan-progress { margin:0; }
+}
+@media (max-width:900px) {
+  .layout-b .workspace-shell { grid-template-columns:165px minmax(0,1fr); }
+  .layout-b .workspace-header { padding-inline:12px; }
+  .layout-b .workspace-motto { font-size:14px; }
+  .layout-b .topbar,.layout-b .toolbar { padding-inline:16px; }
+  .layout-b .workspace-content-head,.layout-b #message,.layout-b .work-area { margin-inline:16px; }
+  .layout-b .storage-details { margin-inline:16px; }
+  .layout-b .overview-item:nth-of-type(4) { display:none; }
+  .layout-b .charts { grid-template-columns:minmax(0,1fr); }
+}
+@media (max-width:760px) {
+  .layout-b .workspace-shell { grid-template-columns:150px minmax(0,1fr); }
+  .layout-b .workspace-header { padding-inline:9px; }
+  .layout-b .workspace-brand .brand { font-size:14px; }
+  .layout-b .workspace-motto { font-size:13px; }
+  .layout-b .topbar { flex-wrap:wrap; }
+  .layout-b .topbar .actions { margin-left:0; }
+  .layout-b #workspace-date { font-size:11px; }
+  .layout-b .workspace-content-head { flex-wrap:wrap; padding-block:7px; }
+  .layout-b .plan-summary { grid-template-columns:1fr; }
+}
+@media (max-width:620px) {
+  .layout-b .workspace-shell { display:block; }
+  .layout-b .workspace-header { position:static; height:auto; padding:10px 14px; }
+  .layout-b .workspace-brand { display:flex; align-items:center; gap:14px; }
+  .layout-b .workspace-motto { margin:0; }
+  .layout-b .views { flex-direction:row; overflow-x:auto; margin-top:9px; }
+  .layout-b .views button { width:auto; min-height:36px; flex-shrink:0; padding:6px 8px; border-left:0; border-bottom:2px solid transparent; }
+  .layout-b .views button[aria-current] { border-bottom-color:var(--accent); }
+  .layout-b .workspace-tools { flex-direction:row; flex-wrap:wrap; padding-top:7px; margin-top:7px; }
+  .layout-b .workspace-tools button { width:auto; min-height:34px; padding:5px 7px; }
+  .layout-b .topbar .actions button { min-height:36px; }
+}
